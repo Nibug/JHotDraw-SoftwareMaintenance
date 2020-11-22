@@ -141,44 +141,46 @@ public class SVGTextFigure
         return getTextShape().getBounds2D().contains(p);
     }
     
-    private Shape getTextShape() {
+    @FeatureEntryPoint("underline")
+    public Shape getTextShape() {
         if (cachedTextShape == null) {
             String text = getText();
             if (text == null || text.length() == 0) {
                 text = " ";
-            }
-            
-            FontRenderContext frc = getFontRenderContext();
-            HashMap<TextAttribute,Object> textAttributes = new HashMap<TextAttribute,Object>();
-            textAttributes.put(TextAttribute.FONT, getFont());
-            if (FONT_UNDERLINE.get(this)) {
-                textAttributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-            }
-            TextLayout textLayout = new TextLayout(text, textAttributes, frc);
-            
-            AffineTransform tx = new AffineTransform();
-            tx.translate(coordinates[0].x, coordinates[0].y);
-            switch (TEXT_ANCHOR.get(this)) {
-                case END :
-                    tx.translate(-textLayout.getAdvance(), 0);
-                    break;
-                case MIDDLE :
-                    tx.translate(-textLayout.getAdvance() / 2d, 0);
-                    break;
-                case START :
-                    break;
-            }
-            tx.rotate(rotates[0]);
-            
-            /*
-            if (TRANSFORM.get(this) != null) {
-                tx.preConcatenate(TRANSFORM.get(this));
-            }*/
-            
+            }            
+            TextLayout textLayout = getShapeForText(text);
+            AffineTransform tx = getTextPosition(textLayout);            
             cachedTextShape = tx.createTransformedShape(textLayout.getOutline(tx));
             cachedTextShape = textLayout.getOutline(tx);
         }
         return cachedTextShape;
+    }
+    
+    private TextLayout getShapeForText(String text){
+        FontRenderContext frc = getFontRenderContext();
+        HashMap<TextAttribute, Object> textAttributes = new HashMap<TextAttribute, Object>();
+        textAttributes.put(TextAttribute.FONT, getFont());
+        if (FONT_UNDERLINE.get(this)) {
+            textAttributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+        }
+        return new TextLayout(text, textAttributes, frc);
+    }
+    
+    private AffineTransform getTextPosition(TextLayout textLayout) {
+        AffineTransform tx = new AffineTransform();
+        tx.translate(coordinates[0].x, coordinates[0].y);
+        switch (TEXT_ANCHOR.get(this)) {
+            case END :
+                tx.translate(-textLayout.getAdvance(), 0);
+                break;
+            case MIDDLE :
+                tx.translate(-textLayout.getAdvance() / 2d, 0);
+                break;
+            case START :
+                break;
+        }
+        tx.rotate(rotates[0]);
+        return tx;
     }
     
     public void setBounds(Point2D.Double anchor, Point2D.Double lead) {
