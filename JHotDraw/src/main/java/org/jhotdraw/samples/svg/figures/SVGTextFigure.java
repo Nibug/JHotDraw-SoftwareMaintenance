@@ -142,7 +142,7 @@ public class SVGTextFigure
     }
     
     @FeatureEntryPoint("underline")
-    private Shape getTextShape() {
+    public Shape getTextShape() {
         if (cachedTextShape == null) {
             String text = getText();
             if (text == null || text.length() == 0) {

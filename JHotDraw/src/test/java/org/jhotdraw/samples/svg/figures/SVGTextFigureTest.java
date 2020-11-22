@@ -39,11 +39,10 @@ public class SVGTextFigureTest {
     }
 
     /**
-     * Test of drawText method, of class SVGTextFigure.
+     * Test of getTextShape method, of class SVGTextFigure.
      */
     @Test
-    public void testDrawText() {
-        System.out.println("Check for underline");
+    public void getTextShapeTest() {
         SVGTextFigure svg = new SVGTextFigure();
         assertNotNull(svg);
         assertTrue(TextAttribute.FONT.UNDERLINE_ON == 0);
